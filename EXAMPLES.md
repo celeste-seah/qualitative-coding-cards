@@ -37,7 +37,7 @@ OK to proceed?
 ```
 "just hang up and call back"
 [S3 | A2 | P07]
-In Vivo
+IN VIVO
 ```
 
 Layer name: `[S3 | A2 | P07] "just hang up and call back"`
@@ -57,13 +57,15 @@ Codes reused     0    (first participant)
 Skipped          facilitator prompts, two acknowledgements, warm-up chat
 
 Codebook so far
-  Descriptive  caller verification, official number lookup, callback
-  Values       v: distrust of unknown numbers, b: government will not call
-  Emotion      anxiety, relief
+  Values       V: Simple, recognisable caller ID
+               A: Won't answer unfamiliar agencies
+               B: Government never calls first
+  Descriptive  Agency prefix + number
+  Emotion      Anxiety, relief
   In Vivo      "just hang up and call back", "how would I know it's real"
 
 Ambiguities
-  "I'd probably ignore it" could be a: avoidance or Process: ignoring. Coded as Values.
+  "I'd probably ignore it" could be A: Ignores unknown callers or Process: Ignoring. Coded as Values.
 
 Memo
   P07 frames safety as ending the call, not verifying it. Relief follows the
