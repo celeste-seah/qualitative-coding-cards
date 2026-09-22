@@ -6,9 +6,9 @@ Default set for this skill is an Eclectic combination of the four below (Saldañ
 
 | Lens | Chapter | Code looks like | Best evidence source | Watch out |
 |---|---|---|---|---|
-| Descriptive | 6, Elemental | Short noun or noun phrase naming the topic | Worksheets, artefacts, observer notes, field-note style material | Saldaña advises against relying on it for small-sample interview talk; noun codes say little about what participants mean |
+| Descriptive | 6, Elemental | Topic noun, e.g. "Agency prefix + number". Names what was talked about or shown, not what it means | Worksheets, artefacts, observer notes, field-note style material | Saldaña advises against relying on it for small-sample interview talk; noun codes say little about what participants mean |
 | In Vivo | 6, Elemental | Participant's own words, always in double quotes | Transcripts, worksheet free text | Overuse limits conceptual lift; keep to words that stand out (impact nouns, action verbs, metaphors, repeated phrases) |
-| Values | 7, Affective | A value, attitude or belief. Optional prefix `v:` `a:` `b:` when the distinction matters | Transcripts, worksheets, observed actions in notes | Values coding is values-laden. Code from the participant's perspective, not the researcher's judgement |
+| Values | 7, Affective | `V:` value as a noun phrase ("V: Ability to call back"), `A:` attitude as a stance ("A: Won't answer unfamiliar agencies"), `B:` belief as a proposition ("B: Number alone doesn't identify the agency") | Transcripts, worksheets, observed actions in notes | Values coding is values-laden. Code from the participant's perspective, not the researcher's judgement. Stated values and observed behaviour can differ |
 | Emotion | 7, Affective | An emotion word or the participant's own emotional phrase | Transcripts plus observer notes on body language and voice | Emotions read from text alone are less reliable. Require explicit statement or a corroborating observer note. Anger and frustration are consequential; look for the trigger |
 
 Other lenses the user may ask for: Process (gerund actions), Versus (X vs Y tensions), Concept (abstract ideas), Provisional (start list from prior research), Causation (why). Definitions are in the `dovetail-code` skill's REFERENCE.md.
@@ -23,7 +23,17 @@ Other lenses the user may ask for: Process (gerund actions), Versus (X vs Y tens
 
 **Reuse codes.** Coding is for finding patterns. If a code is never reused across incidents or participants you are abbreviating, not coding. Keep a running codebook in the conversation: code, lens, one-line description, one example. Check it before inventing new wording.
 
-**Code length.** One word, a two-word couplet, or a short phrase. In Vivo codes rarely run to a full sentence.
+**Code form by lens.** One to five words. Sentence case on the board. Each lens has a grammar; mixing them is the most common error.
+
+| Lens | Grammar | Example |
+|---|---|---|
+| Values | `V:` + noun phrase for what matters. `A:` + stance for how they feel about something. `B:` + proposition for what they hold true | V: Simple, recognisable caller ID. A: Won't answer unfamiliar agencies. B: Number alone doesn't identify the agency |
+| In Vivo | Participant's exact words in double quotes, the phrase that carries their meaning, not filler emphasis | "I can always call it back" |
+| Descriptive | Topic noun. What was shown or discussed, not its meaning | Agency prefix + number |
+| Emotion | Feeling word, or the participant's own phrase for it in quotes | Suspicion. "Kan cheong" |
+| Process | Gerund only, for what people do | Calling back to verify |
+
+Wrong: a gerund sentence labelled Values ("Relying on calling back to learn who called and why"). That is Process coding. Wrong: a topic noun labelled Values ("Caller ID preferences"). That is Descriptive.
 
 **Simultaneous coding is fine when justified** (Ch. 5). Two lenses on one incident are correct when the passage carries both manifest and latent meaning. Four lenses on every incident signals an unfocused analysis. If the Descriptive, Values, Emotion and In Vivo candidates all say the same thing, keep the most analytically useful one.
 
@@ -53,17 +63,21 @@ const section = await figma.getNodeByIdAsync("SECTION_ID")
 const page = section.type === "PAGE" ? section : (() => { let n = section; while (n.type !== "PAGE") n = n.parent; return n })()
 await figma.setCurrentPageAsync(page)
 const texts = section.findAllWithCriteria({ types: ["TEXT"] })
+const stickies = section.findAllWithCriteria({ types: ["STICKY", "SHAPE_WITH_TEXT"] })   // observer notes live here
 return {
   section: { id: section.id, name: section.name, box: section.absoluteBoundingBox },
   page: page.name,
   texts: texts.map(t => ({
     id: t.id, name: t.name, parent: t.parent && t.parent.name,
     box: t.absoluteBoundingBox, characters: t.characters
-  }))
+  })),
+  stickies: stickies.map(n => ({ id: n.id, box: n.absoluteBoundingBox, text: n.text.characters }))
 }
 ```
 
-If the return is too large, add `.slice(start, end)` on `texts` and page through.
+Transport fails above roughly 20k characters of response. For a long transcript, return `characters.slice(a, b)` in chunks of about 2,500 and issue the chunk calls in parallel. If a chunk still fails, strip non-ASCII with `.replace(/[^\x20-\x7E\n]/g, "?")` for reading; anchors in the write script still match on the original text as long as the anchor phrase is plain ASCII.
+
+Place transcript cards at `stickyLeft - 4 - W` rather than a fixed overlap: the transcript column and the observer sticky sit close together on these boards, and this is the furthest right a card can go without covering the sticky.
 
 ### 4b. Detect existing cards (read-only)
 
@@ -172,6 +186,7 @@ Assign in participant order. Check existing cards first so a returning participa
 | Card per speaker turn | Mechanical segmentation | Segment by incident; reread for topic shifts |
 | Four cards saying one thing | Forcing every lens on every incident | Pick the most analytically useful lens; Simultaneous coding only when meanings differ |
 | Descriptive codes dominating a transcript | Descriptive is the easy default | Save Descriptive for artefacts and notes; use In Vivo, Values, Emotion on talk |
+| Values codes written as gerund sentences or bare topics | Mixing lens grammars | Use `V:` `A:` `B:` plus a one to five word noun, stance or proposition. Gerunds belong to Process, topic nouns to Descriptive |
 | Emotion inferred from flat text | Reading tone into a transcript | Require stated emotion or observer-note corroboration |
 | In Vivo code paraphrased | Working from memory | Copy from the returned `characters`; keep the quotes |
 | Codebook forks per participant | Not checking earlier wording | Keep the codebook in chat and check before new wording |
